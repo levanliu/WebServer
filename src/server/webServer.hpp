@@ -45,6 +45,7 @@ private:
 
   void sendError_(int fd,const char* info);
   void extentTime_(HttpConn* client);
+  void closeConn_(HttpConn* client);
 
   void onRead_(HttpConn* client);
   void onWrite_(HttpConn* client);
