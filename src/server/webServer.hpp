@@ -46,9 +46,9 @@ private:
   void sendError_(int fd,const char* info);
   void extentTime_(HttpConn* client);
 
-  void onRead(HttpConn* client);
-  void onWrite(HttpConn* client);
-  void onProcess(HttpConn* client);
+  void onRead_(HttpConn* client);
+  void onWrite_(HttpConn* client);
+  void onProcess_(HttpConn* client);
 
   static const int MAX_FD = 65535;
 
