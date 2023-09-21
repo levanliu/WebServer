@@ -19,7 +19,7 @@ void HeapTimer::shiftUp_(std::size_t i) {
       break;
 
     swapNode_(i, j);
-    //go on, find smallest value of a tree leaf based on i.
+    // go on, find smallest value of a tree leaf based on i.
     i = j;
     j = (i - 1) / 2;
   }
@@ -39,7 +39,7 @@ bool HeapTimer::shiftDown_(std::size_t index, std::size_t n) {
     if (heap_[i] < heap_[j])
       break;
     swapNode_(i, j);
-    //go on, find smallest value of a tree based on index.
+    // go on, find smallest value of a tree based on index.
     i = j;
     j = i * 2 + 1;
   }
@@ -51,11 +51,14 @@ void HeapTimer::add(int id, int timeout, const TimeoutCallBack &cb) {
   std::size_t i;
   // map<int,size_t>   id <-----------> i (temp heap_ size())
   if (ref_.count(id) == 0) {
+    // new node, insert node to heap_.end(), then shiftUp_ heap;
     i = heap_.size();
     ref_[id] = i;
     heap_.push_back({id, Clock::now() + Ms(timeout), cb});
     shiftUp_(i);
   } else {
+    // existed node, shiftDown_ then shiftUp_ heap. ensure heap will be a
+    // smaller root heap.
     i = ref_[id];
     heap_[i].expires = Clock::now() + Ms(timeout);
     heap_[i].cb = cb;
@@ -65,7 +68,7 @@ void HeapTimer::add(int id, int timeout, const TimeoutCallBack &cb) {
   }
 }
 
-//run callback function, then del i
+// run callback function, then del i
 void HeapTimer::doWork(int id) {
   if (heap_.empty() || ref_.count(id) == 0)
     return;
@@ -91,7 +94,7 @@ void HeapTimer::del_(std::size_t index) {
   heap_.pop_back();
 }
 
-//weak up, call callback function, pop from heap_.
+// weak up, call callback function, pop from heap_.
 void HeapTimer::tick() {
   if (heap_.empty()) {
     return;

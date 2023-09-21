@@ -11,7 +11,6 @@
 
 class Epoller {
 public:
-  Epoller() = delete;
   // 2^20 = 1024*1024 = one million level
   explicit Epoller(std::size_t maxEvent = (1<<20) );
   Epoller(Epoller &&) = delete;

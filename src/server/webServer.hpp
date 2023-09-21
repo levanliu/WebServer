@@ -21,7 +21,7 @@
 class WebServer {
 public:
   WebServer(
-    int port,int trigMode,int timeoutMs,bool optLinger,
+    int port,int trigMode,int timeoutMs,bool openLinger,
     int sqlPort,const char* sqlUser,const char* sqlPwd,
     const char* dbName,int connPoolNum,int threadNum,
     bool openLog,int logLevel,int logQueSize
@@ -55,7 +55,7 @@ private:
   static int setFdNonBlock(int fd);
 
   int port_;
-  bool opneLinger_;
+  bool openLinger_;
   int timeoutMs_;
   bool isClose_;
   int listenFd_;
