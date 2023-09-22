@@ -1,7 +1,10 @@
 #pragma once
 
-#include <netinet/in.h>
 #include <sys/types.h>
+#include <sys/uio.h>     // readv/writev
+#include <arpa/inet.h>   // sockaddr_in
+#include <stdlib.h>      // atoi()
+#include <errno.h>
 
 #include "../buffer/buffer.hpp"
 #include "../log/log.hpp"
@@ -21,7 +24,7 @@ public:
   void init(int sockFd, const sockaddr_in &addr);
   std::size_t read(int *saveErrno);
   std::size_t write(int *saveErrno);
-  void close();
+  void close_();
   int getFd() const;
   int getPort() const;
 
@@ -34,7 +37,7 @@ public:
   bool isKeepAlive() const { return request_.isKeepAlive(); }
 
   static bool isET;
-  static const char* srcDir;
+  static const char *srcDir;
   static std::atomic<int> userCount;
 
 private:
@@ -42,6 +45,8 @@ private:
   struct sockaddr_in addr_;
 
   bool isClose_;
+
+  int iovCnt_;
   struct iovec iov_[2];
 
   Buffer readBuff_;
