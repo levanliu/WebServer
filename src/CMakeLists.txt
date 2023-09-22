@@ -14,7 +14,7 @@ foreach(CURRENT_FOLDER ${srcDirs})
         
         add_subdirectory(${CURRENT_FOLDER})
        
-        target_link_libraries(server
+        target_link_libraries(webServer
                 PRIVATE ${CURRENT_FOLDER})
 
 endforeach()

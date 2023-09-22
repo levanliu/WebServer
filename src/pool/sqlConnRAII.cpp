@@ -1,6 +1,6 @@
-#include "SqlConnRAII.hpp"
+#include "sqlConnRAII.hpp"
 
-sqlConnPool::SqlConnRAII(MYSQL **sql, SqlConnPool *connPool) {
+SqlConnRAII::SqlConnRAII(MYSQL **sql, SqlConnPool *connPool) {
   assert(connPool);
   *sql = connPool->getConn();
   sql_ = *sql;

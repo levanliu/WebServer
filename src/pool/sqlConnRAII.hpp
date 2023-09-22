@@ -4,8 +4,7 @@
 #include <cassert>
 class SqlConnRAII {
 public:
-  SqlConnRAII() = delete;
-  SqlConnRAII(MYSQL **sql, SqlConnPool *connPool_);
+  SqlConnRAII(MYSQL **sql, SqlConnPool *connPool);
   SqlConnRAII(SqlConnRAII &&) = delete;
   SqlConnRAII(const SqlConnRAII &) = delete;
   SqlConnRAII &operator=(SqlConnRAII &&) = delete;
@@ -16,4 +15,3 @@ private:
   MYSQL *sql_;
   SqlConnPool *connPool_;
 };
-
