@@ -1,5 +1,5 @@
 # 将main.cpp编译成可执行文件
-add_executable(Server main.cpp)
+add_executable(webServer main.cpp)
 
 set(srcDirs
   buffer
