@@ -119,7 +119,7 @@ void WebServer::closeConn_(HttpConn *client) {
   assert(client);
   LOG_INFO("Client[%d] quit!", client->getFd());
   epoller_->delFd(client->getFd());
-  client->close();
+  client->close_();
 }
 
 void WebServer::addClient_(int fd, sockaddr_in addr) {

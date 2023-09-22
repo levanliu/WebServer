@@ -9,7 +9,6 @@
 template<class T>
 class BlockDeque {
 public:
-  BlockDeque();
   BlockDeque(BlockDeque &&) = delete;
   BlockDeque(const BlockDeque &) = delete;
   BlockDeque &operator=(BlockDeque &&) = delete;
