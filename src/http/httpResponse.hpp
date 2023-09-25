@@ -31,7 +31,7 @@ public:
 
 private:
   void addStateLine_(Buffer &buff);
-  void addheader_(Buffer &buff);
+  void addHeader_(Buffer &buff);
   void addContent_(Buffer &buff);
 
   void errorHtml_();
