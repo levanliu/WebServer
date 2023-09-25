@@ -1,8 +1,11 @@
 #pragma once
 
-#include <string>
 #include <unordered_map>
 #include <unordered_set>
+#include <string>
+#include <regex>
+#include <errno.h>     
+#include <mysql/mysql.h> 
 
 #include "../buffer/buffer.hpp"
 #include "../log/log.hpp"
@@ -67,8 +70,8 @@ private:
   std::unordered_map<std::string, std::string> header_;
   std::unordered_map<std::string, std::string> post_;
 
-  static const std::unordered_set<std::string> delete_HTML;
-  static const std::unordered_map<std::string, int> delete_HTML_TAG;
+  static const std::unordered_set<std::string> DEFAULT_HTML;
+  static const std::unordered_map<std::string, int> DEFAULT_HTML_TAG;
   static int converHex(char ch);
 };
 
