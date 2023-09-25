@@ -5,8 +5,9 @@
 #include <cstddef>
 #include <functional>
 #include <unordered_map>
-#include <cassert>
+#include <assert.h>
 #include <chrono>
+#include <vector>
 
 // define if timeout will call callback function
 typedef std::function<void()> TimeoutCallBack;
