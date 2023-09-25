@@ -17,7 +17,7 @@ WebServer::WebServer(
     strncat(srcDir_, "/resources/", 16);
     HttpConn::userCount = 0;
     HttpConn::srcDir = srcDir_;
-    SqlConnPool::Instance()->Init("localhost", sqlPort, sqlUser, sqlPwd, dbName, connPoolNum);
+    SqlConnPool::Instance()->init("localhost", sqlPort, sqlUser, sqlPwd, dbName, connPoolNum);
 
     InitEventMode_(trigMode);
     if(!InitSocket_()) { isClose_ = true;}
@@ -114,8 +114,8 @@ void WebServer::SendError_(int fd, const char*info) {
 
 void WebServer::CloseConn_(HttpConn* client) {
     assert(client);
-    LOG_INFO("Client[%d] quit!", client->GetFd());
-    epoller_->DelFd(client->GetFd());
+    LOG_INFO("Client[%d] quit!", client->getFd());
+    epoller_->DelFd(client->getFd());
     client->Close();
 }
 
@@ -127,7 +127,7 @@ void WebServer::AddClient_(int fd, sockaddr_in addr) {
     }
     epoller_->AddFd(fd, EPOLLIN | connEvent_);
     SetFdNonblock(fd);
-    LOG_INFO("Client[%d] in!", users_[fd].GetFd());
+    LOG_INFO("Client[%d] in!", users_[fd].getFd());
 }
 
 void WebServer::DealListen_() {
@@ -159,7 +159,7 @@ void WebServer::DealWrite_(HttpConn* client) {
 
 void WebServer::ExtentTime_(HttpConn* client) {
     assert(client);
-    if(timeoutMS_ > 0) { timer_->adjust(client->GetFd(), timeoutMS_); }
+    if(timeoutMS_ > 0) { timer_->adjust(client->getFd(), timeoutMS_); }
 }
 
 void WebServer::OnRead_(HttpConn* client) {
@@ -176,9 +176,9 @@ void WebServer::OnRead_(HttpConn* client) {
 
 void WebServer::OnProcess(HttpConn* client) {
     if(client->process()) {
-        epoller_->ModFd(client->GetFd(), connEvent_ | EPOLLOUT);
+        epoller_->ModFd(client->getFd(), connEvent_ | EPOLLOUT);
     } else {
-        epoller_->ModFd(client->GetFd(), connEvent_ | EPOLLIN);
+        epoller_->ModFd(client->getFd(), connEvent_ | EPOLLIN);
     }
 }
 
@@ -187,9 +187,9 @@ void WebServer::OnWrite_(HttpConn* client) {
     int ret = -1;
     int writeErrno = 0;
     ret = client->write(&writeErrno);
-    if(client->ToWriteBytes() == 0) {
+    if(client->toWriteBytes() == 0) {
         /* 传输完成 */
-        if(client->IsKeepAlive()) {
+        if(client->isKeepAlive()) {
             OnProcess(client);
             return;
         }
@@ -197,7 +197,7 @@ void WebServer::OnWrite_(HttpConn* client) {
     else if(ret < 0) {
         if(writeErrno == EAGAIN) {
             /* 继续传输 */
-            epoller_->ModFd(client->GetFd(), connEvent_ | EPOLLOUT);
+            epoller_->ModFd(client->getFd(), connEvent_ | EPOLLOUT);
             return;
         }
     }

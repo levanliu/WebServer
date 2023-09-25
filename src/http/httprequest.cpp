@@ -8,14 +8,14 @@ const unordered_set<string> HttpRequest::DEFAULT_HTML{
 const unordered_map<string, int> HttpRequest::DEFAULT_HTML_TAG {
             {"/register.html", 0}, {"/login.html", 1},  };
 
-void HttpRequest::Init() {
+void HttpRequest::init() {
     method_ = path_ = version_ = body_ = "";
     state_ = REQUEST_LINE;
     header_.clear();
     post_.clear();
 }
 
-bool HttpRequest::IsKeepAlive() const {
+bool HttpRequest::isKeepAlive() const {
     if(header_.count("Connection") == 1) {
         return header_.find("Connection")->second == "keep-alive" && version_ == "1.1";
     }
@@ -24,40 +24,40 @@ bool HttpRequest::IsKeepAlive() const {
 
 bool HttpRequest::parse(Buffer& buff) {
     const char CRLF[] = "\r\n";
-    if(buff.ReadableBytes() <= 0) {
+    if(buff.readableBytes() <= 0) {
         return false;
     }
-    while(buff.ReadableBytes() && state_ != FINISH) {
-        const char* lineEnd = search(buff.Peek(), buff.BeginWriteConst(), CRLF, CRLF + 2);
-        std::string line(buff.Peek(), lineEnd);
+    while(buff.readableBytes() && state_ != FINISH) {
+        const char* lineEnd = search(buff.peek(), buff.beginWriteConst(), CRLF, CRLF + 2);
+        std::string line(buff.peek(), lineEnd);
         switch(state_)
         {
         case REQUEST_LINE:
-            if(!ParseRequestLine_(line)) {
+            if(!parseRequestLine_(line)) {
                 return false;
             }
-            ParsePath_();
+            parsePath_();
             break;    
         case HEADERS:
-            ParseHeader_(line);
-            if(buff.ReadableBytes() <= 2) {
+            parseHeader_(line);
+            if(buff.readableBytes() <= 2) {
                 state_ = FINISH;
             }
             break;
         case BODY:
-            ParseBody_(line);
+            parseBody_(line);
             break;
         default:
             break;
         }
-        if(lineEnd == buff.BeginWrite()) { break; }
-        buff.RetrieveUntil(lineEnd + 2);
+        if(lineEnd == buff.beginWrite()) { break; }
+        buff.retrieveUntil(lineEnd + 2);
     }
     LOG_DEBUG("[%s], [%s], [%s]", method_.c_str(), path_.c_str(), version_.c_str());
     return true;
 }
 
-void HttpRequest::ParsePath_() {
+void HttpRequest::parsePath_() {
     if(path_ == "/") {
         path_ = "/index.html"; 
     }
@@ -71,7 +71,7 @@ void HttpRequest::ParsePath_() {
     }
 }
 
-bool HttpRequest::ParseRequestLine_(const string& line) {
+bool HttpRequest::parseRequestLine_(const string& line) {
     regex patten("^([^ ]*) ([^ ]*) HTTP/([^ ]*)$");
     smatch subMatch;
     if(regex_match(line, subMatch, patten)) {   
@@ -85,7 +85,7 @@ bool HttpRequest::ParseRequestLine_(const string& line) {
     return false;
 }
 
-void HttpRequest::ParseHeader_(const string& line) {
+void HttpRequest::parseHeader_(const string& line) {
     regex patten("^([^:]*): ?(.*)$");
     smatch subMatch;
     if(regex_match(line, subMatch, patten)) {
@@ -96,28 +96,28 @@ void HttpRequest::ParseHeader_(const string& line) {
     }
 }
 
-void HttpRequest::ParseBody_(const string& line) {
+void HttpRequest::parseBody_(const string& line) {
     body_ = line;
-    ParsePost_();
+    parsePost_();
     state_ = FINISH;
     LOG_DEBUG("Body:%s, len:%d", line.c_str(), line.size());
 }
 
-int HttpRequest::ConverHex(char ch) {
+int HttpRequest::converHex(char ch) {
     if(ch >= 'A' && ch <= 'F') return ch -'A' + 10;
     if(ch >= 'a' && ch <= 'f') return ch -'a' + 10;
     return ch;
 }
 
-void HttpRequest::ParsePost_() {
+void HttpRequest::parsePost_() {
     if(method_ == "POST" && header_["Content-Type"] == "application/x-www-form-urlencoded") {
-        ParseFromUrlencoded_();
+        parseFromUrlencoded_();
         if(DEFAULT_HTML_TAG.count(path_)) {
             int tag = DEFAULT_HTML_TAG.find(path_)->second;
             LOG_DEBUG("Tag:%d", tag);
             if(tag == 0 || tag == 1) {
                 bool isLogin = (tag == 1);
-                if(UserVerify(post_["username"], post_["password"], isLogin)) {
+                if(userVerify(post_["username"], post_["password"], isLogin)) {
                     path_ = "/welcome.html";
                 } 
                 else {
@@ -128,7 +128,7 @@ void HttpRequest::ParsePost_() {
     }   
 }
 
-void HttpRequest::ParseFromUrlencoded_() {
+void HttpRequest::parseFromUrlencoded_() {
     if(body_.size() == 0) { return; }
 
     string key, value;
@@ -147,7 +147,7 @@ void HttpRequest::ParseFromUrlencoded_() {
             body_[i] = ' ';
             break;
         case '%':
-            num = ConverHex(body_[i + 1]) * 16 + ConverHex(body_[i + 2]);
+            num = converHex(body_[i + 1]) * 16 + converHex(body_[i + 2]);
             body_[i + 2] = num % 10 + '0';
             body_[i + 1] = num / 10 + '0';
             i += 2;
@@ -169,7 +169,7 @@ void HttpRequest::ParseFromUrlencoded_() {
     }
 }
 
-bool HttpRequest::UserVerify(const string &name, const string &pwd, bool isLogin) {
+bool HttpRequest::userVerify(const string &name, const string &pwd, bool isLogin) {
     if(name == "" || pwd == "") { return false; }
     LOG_INFO("Verify name:%s pwd:%s", name.c_str(), pwd.c_str());
     MYSQL* sql;
@@ -245,7 +245,7 @@ std::string HttpRequest::version() const {
     return version_;
 }
 
-std::string HttpRequest::GetPost(const std::string& key) const {
+std::string HttpRequest::getPost(const std::string& key) const {
     assert(key != "");
     if(post_.count(key) == 1) {
         return post_.find(key)->second;
@@ -253,7 +253,7 @@ std::string HttpRequest::GetPost(const std::string& key) const {
     return "";
 }
 
-std::string HttpRequest::GetPost(const char* key) const {
+std::string HttpRequest::getPost(const char* key) const {
     assert(key != nullptr);
     if(post_.count(key) == 1) {
         return post_.find(key)->second;

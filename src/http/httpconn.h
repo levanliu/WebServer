@@ -29,22 +29,22 @@ public:
 
     void Close();
 
-    int GetFd() const;
+    int getFd() const;
 
-    int GetPort() const;
+    int getPort() const;
 
-    const char* GetIP() const;
+    const char* getIP() const;
     
-    sockaddr_in GetAddr() const;
+    sockaddr_in getAddr() const;
     
     bool process();
 
-    int ToWriteBytes() { 
+    int toWriteBytes() { 
         return iov_[0].iov_len + iov_[1].iov_len; 
     }
 
-    bool IsKeepAlive() const {
-        return request_.IsKeepAlive();
+    bool isKeepAlive() const {
+        return request_.isKeepAlive();
     }
 
     static bool isET;

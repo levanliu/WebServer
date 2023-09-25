@@ -12,35 +12,35 @@ public:
     Buffer(int initBuffSize = 1024);
     ~Buffer() = default;
 
-    size_t WritableBytes() const;       
-    size_t ReadableBytes() const ;
-    size_t PrependableBytes() const;
+    size_t writableBytes() const;       
+    size_t readableBytes() const ;
+    size_t prependableBytes() const;
 
-    const char* Peek() const;
-    void EnsureWriteable(size_t len);
-    void HasWritten(size_t len);
+    const char* peek() const;
+    void ensureWriteable(size_t len);
+    void hasWritten(size_t len);
 
-    void Retrieve(size_t len);
-    void RetrieveUntil(const char* end);
+    void retrieve(size_t len);
+    void retrieveUntil(const char* end);
 
-    void RetrieveAll() ;
-    std::string RetrieveAllToStr();
+    void retrieveAll() ;
+    std::string retrieveAllToStr();
 
-    const char* BeginWriteConst() const;
-    char* BeginWrite();
+    const char* beginWriteConst() const;
+    char* beginWrite();
 
-    void Append(const std::string& str);
-    void Append(const char* str, size_t len);
-    void Append(const void* data, size_t len);
-    void Append(const Buffer& buff);
+    void append(const std::string& str);
+    void append(const char* str, size_t len);
+    void append(const void* data, size_t len);
+    void append(const Buffer& buff);
 
-    ssize_t ReadFd(int fd, int* Errno);
-    ssize_t WriteFd(int fd, int* Errno);
+    ssize_t readFd(int fd, int* Errno);
+    ssize_t writeFd(int fd, int* Errno);
 
 private:
-    char* BeginPtr_();
-    const char* BeginPtr_() const;
-    void MakeSpace_(size_t len);
+    char* beginPtr_();
+    const char* beginPtr_() const;
+    void makeSpace_(size_t len);
 
     std::vector<char> buffer_;
     std::atomic<std::size_t> readPos_;
