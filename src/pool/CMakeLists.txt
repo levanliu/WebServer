@@ -1,23 +1,68 @@
-# 编译静态库，暂不添加任何源码。
 add_library(pool "")
+add_library(sqlconnpool "")
+add_library(sqlconnRAII "")
 
-file(GLOB_RECURSE SRC_CPP_DIR_LIST "${CMAKE_CURRENT_LIST_DIR}/*.cpp" "${CMAKE_CURRENT_LIST_DIR}/*.c")
-file(GLOB_RECURSE SRC_HPP_DIR_LIST "${CMAKE_CURRENT_LIST_DIR}/*.hpp" "${CMAKE_CURRENT_LIST_DIR}/*.h")
+IF (MYSQL_INCLUDE_DIR)
+  # Already in cache, be silent
+  SET(MYSQL_FIND_QUIETLY TRUE)
+ENDIF (MYSQL_INCLUDE_DIR)
 
-# 随后用target_sources添加源码。
-# 这种方式更好，因为可以更细粒度地访问权限。
-# 例如对cpp文件就是PRIVATE，而hpp则是PUBLIC
-target_sources(pool
+FIND_PATH(MYSQL_INCLUDE_DIR mysql.h
+  /usr/local/include/mysql
+  /usr/include/mysql
+)
+
+SET(MYSQL_NAMES mysqlclient mysqlclient_r)
+FIND_LIBRARY(MYSQL_LIBRARY
+  NAMES ${MYSQL_NAMES}
+  PATHS /usr/lib /usr/local/lib
+  PATH_SUFFIXES mysql
+)
+
+IF (MYSQL_INCLUDE_DIR AND MYSQL_LIBRARY)
+  SET(MYSQL_FOUND TRUE)
+  SET( MYSQL_LIBRARIES ${MYSQL_LIBRARY} )
+ELSE (MYSQL_INCLUDE_DIR AND MYSQL_LIBRARY)
+  SET(MYSQL_FOUND FALSE)
+  SET( MYSQL_LIBRARIES )
+ENDIF (MYSQL_INCLUDE_DIR AND MYSQL_LIBRARY)
+
+IF (MYSQL_FOUND)
+  IF (NOT MYSQL_FIND_QUIETLY)
+    MESSAGE(STATUS "Found MySQL: ${MYSQL_LIBRARY}")
+  ENDIF (NOT MYSQL_FIND_QUIETLY)
+ELSE (MYSQL_FOUND)
+  IF (MYSQL_FIND_REQUIRED)
+    MESSAGE(STATUS "Looked for MySQL libraries named ${MYSQL_NAMES}.")
+    MESSAGE(FATAL_ERROR "Could NOT find MySQL library")
+  ENDIF (MYSQL_FIND_REQUIRED)
+ENDIF (MYSQL_FOUND)
+
+MARK_AS_ADVANCED(
+  MYSQL_LIBRARY
+  MYSQL_INCLUDE_DIR
+  )
+include_directories(${MYSQL_INCLUDE_DIR})
+
+target_sources(sqlconnpool
         PRIVATE
-        # 注：${CMAKE_CURRENT_LIST_DIR}代表当前的CMakeLists.txt文件所在的绝对路径。
-        ${SRC_CPP_DIR_LIST}
+        ${CMAKE_CURRENT_SOURCE_DIR}/sqlconnpool.cpp
         PUBLIC
-        ${SRC_HPP_DIR_LIST}
+        ${CMAKE_CURRENT_SOURCE_DIR}/sqlconnpool.h
         )
 
-
-# 增加头文件目录
-target_include_directories(pool
+target_sources(sqlconnRAII
+PRIVATE
+${CMAKE_CURRENT_SOURCE_DIR}/sqlconnRAII.cpp
         PUBLIC
-        ${CMAKE_CURRENT_LIST_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}/sqlconnRAII.h
+        )
+        
+target_link_libraries(pool 
+  sqlconnpool sqlconnRAII ${MYSQL_LIBRARY} buffer http log timer
+)
+
+target_include_directories(pool 
+        PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}
 )

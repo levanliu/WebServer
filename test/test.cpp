@@ -1,8 +1,3 @@
-/*
- * @Author       : mark
- * @Date         : 2020-06-20
- * @copyleft Apache 2.0
- */ 
 #include "../src/log/log.hpp"
 #include "../src/pool/threadPool.hpp"
 #include <features.h>

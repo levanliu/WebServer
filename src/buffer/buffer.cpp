@@ -1,124 +1,135 @@
-#include "buffer.hpp"
-#include <bits/types/struct_iovec.h>
-#include <cerrno>
-#include <sys/uio.h>
-#include <unistd.h>
+#include "buffer.h"
 
-Buffer::Buffer(int initBuffSize)
-    : buffer_(initBuffSize), readPos_(0), writePos_(0) {}
+Buffer::Buffer(int initBuffSize) : buffer_(initBuffSize), readPos_(0), writePos_(0) {}
 
-//could be read size;
-std::size_t Buffer::readableBytes() const { return writePos_ - readPos_; }
-
-//could be write size;
-std::size_t Buffer::writableBytes() const { return buffer_.size() - writePos_; }
-
-//has been read size;
-std::size_t Buffer::preparedBytes() const { return readPos_; }
-
-const char *Buffer::peek() const { return beginPtr_() + readPos_; }
-
-void Buffer::retrieve(std::size_t len) {
-  assert(len <= readableBytes());
-  readPos_ += len;
+size_t Buffer::ReadableBytes() const {
+    return writePos_ - readPos_;
+}
+size_t Buffer::WritableBytes() const {
+    return buffer_.size() - writePos_;
 }
 
-void Buffer::retrieveUntil(const char *end) {
-  assert(peek() <= end);
-  retrieve(end - peek());
+size_t Buffer::PrependableBytes() const {
+    return readPos_;
 }
 
-void Buffer::retrieveAll() {
-  bzero(&buffer_[0], buffer_.size());
-  readPos_ = 0;
-  writePos_ = 0;
+const char* Buffer::Peek() const {
+    return BeginPtr_() + readPos_;
 }
 
-std::string Buffer::retrieveAllToStr() {
-  std::string str(peek(), readableBytes());
-  retrieveAll();
-  return str;
+void Buffer::Retrieve(size_t len) {
+    assert(len <= ReadableBytes());
+    readPos_ += len;
 }
 
-const char *Buffer::beginWriteConst() const { return beginPtr_() + writePos_; }
-
-char *Buffer::beginWrite() { return beginPtr_() + writePos_; }
-
-void Buffer::hasWritten(std::size_t len) { writePos_ += len; }
-
-void Buffer::append(const std::string &str) {
-  append(str.data(), str.length());
+void Buffer::RetrieveUntil(const char* end) {
+    assert(Peek() <= end );
+    Retrieve(end - Peek());
 }
 
-void Buffer::append(const void *data, std::size_t len) {
-  assert(data);
-  append(static_cast<const char *>(data), len);
-}
-
-void Buffer::append(const char *str, std::size_t len) {
-  assert(str);
-  ensureWriteable(len);
-  std::copy(str, str + len, beginWrite());
-  hasWritten(len);
-}
-
-void Buffer::append(const Buffer &buff) {
-  append(buff.peek(), buff.readableBytes());
-}
-
-void Buffer::ensureWriteable(std::size_t len) {
-  if (writableBytes() < len) {
-    makeSpace_(len);
-  }
-  assert(writableBytes() >= len);
-}
-
-std::size_t Buffer::readFd(int fd, int *saveErrno) {
-  char buff[65535];
-  struct iovec iov[2];
-  const std::size_t writable = writableBytes();
-
-  iov[0].iov_base = beginPtr_() + writePos_;
-  iov[0].iov_len = writable;
-  iov[1].iov_base = buff;
-  iov[1].iov_len = sizeof(buff);
-
-  const std::size_t len = readv(fd, iov, 2);
-
-  if (len < 0) {
-    *saveErrno = errno;
-  } else if (static_cast<std::size_t>(len) <= writable) {
-    writePos_ += len;
-  } else {
-    writePos_ = buffer_.size();
-    append(buff, len - writable);
-  }
-  return len;
-}
-
-std::size_t Buffer::writeFd(int fd, int *saveErrno) {
-  std::size_t readSize = readableBytes();
-  std::size_t len = write(fd, peek(), readSize);
-  if (len < 0) {
-    *saveErrno = errno;
-    return len;
-  }
-  readPos_ += len;
-  return len;
-}
-
-char *Buffer::beginPtr_() { return &*buffer_.begin(); }
-
-const char *Buffer::beginPtr_() const { return &*buffer_.begin(); }
-
-void Buffer::makeSpace_(std::size_t len) {
-  if (writableBytes() + preparedBytes() < len) {
-    buffer_.resize(writePos_ + len + 1);
-  } else {
-    std::size_t readable = readableBytes();
-    std::copy(beginPtr_() + readPos_, beginPtr_() + writePos_, beginPtr_());
+void Buffer::RetrieveAll() {
+    bzero(&buffer_[0], buffer_.size());
     readPos_ = 0;
-    writePos_ = readPos_ + readable;
-    assert(readable == readableBytes());
-  }
+    writePos_ = 0;
+}
+
+std::string Buffer::RetrieveAllToStr() {
+    std::string str(Peek(), ReadableBytes());
+    RetrieveAll();
+    return str;
+}
+
+const char* Buffer::BeginWriteConst() const {
+    return BeginPtr_() + writePos_;
+}
+
+char* Buffer::BeginWrite() {
+    return BeginPtr_() + writePos_;
+}
+
+void Buffer::HasWritten(size_t len) {
+    writePos_ += len;
+} 
+
+void Buffer::Append(const std::string& str) {
+    Append(str.data(), str.length());
+}
+
+void Buffer::Append(const void* data, size_t len) {
+    assert(data);
+    Append(static_cast<const char*>(data), len);
+}
+
+void Buffer::Append(const char* str, size_t len) {
+    assert(str);
+    EnsureWriteable(len);
+    std::copy(str, str + len, BeginWrite());
+    HasWritten(len);
+}
+
+void Buffer::Append(const Buffer& buff) {
+    Append(buff.Peek(), buff.ReadableBytes());
+}
+
+void Buffer::EnsureWriteable(size_t len) {
+    if(WritableBytes() < len) {
+        MakeSpace_(len);
+    }
+    assert(WritableBytes() >= len);
+}
+
+ssize_t Buffer::ReadFd(int fd, int* saveErrno) {
+    char buff[65535];
+    struct iovec iov[2];
+    const size_t writable = WritableBytes();
+    /* 分散读， 保证数据全部读完 */
+    iov[0].iov_base = BeginPtr_() + writePos_;
+    iov[0].iov_len = writable;
+    iov[1].iov_base = buff;
+    iov[1].iov_len = sizeof(buff);
+
+    const ssize_t len = readv(fd, iov, 2);
+    if(len < 0) {
+        *saveErrno = errno;
+    }
+    else if(static_cast<size_t>(len) <= writable) {
+        writePos_ += len;
+    }
+    else {
+        writePos_ = buffer_.size();
+        Append(buff, len - writable);
+    }
+    return len;
+}
+
+ssize_t Buffer::WriteFd(int fd, int* saveErrno) {
+    size_t readSize = ReadableBytes();
+    ssize_t len = write(fd, Peek(), readSize);
+    if(len < 0) {
+        *saveErrno = errno;
+        return len;
+    } 
+    readPos_ += len;
+    return len;
+}
+
+char* Buffer::BeginPtr_() {
+    return &*buffer_.begin();
+}
+
+const char* Buffer::BeginPtr_() const {
+    return &*buffer_.begin();
+}
+
+void Buffer::MakeSpace_(size_t len) {
+    if(WritableBytes() + PrependableBytes() < len) {
+        buffer_.resize(writePos_ + len + 1);
+    } 
+    else {
+        size_t readable = ReadableBytes();
+        std::copy(BeginPtr_() + readPos_, BeginPtr_() + writePos_, BeginPtr_());
+        readPos_ = 0;
+        writePos_ = readPos_ + readable;
+        assert(readable == ReadableBytes());
+    }
 }

@@ -1,5 +1,5 @@
 # 将main.cpp编译成可执行文件
-add_executable(webServer main.cpp)
+add_executable(main main.cpp)
 
 set(srcDirs
   buffer
@@ -11,11 +11,15 @@ set(srcDirs
 )
 
 foreach(CURRENT_FOLDER ${srcDirs})
-        
         add_subdirectory(${CURRENT_FOLDER})
-       
-        target_link_libraries(webServer
-                PRIVATE ${CURRENT_FOLDER})
-
 endforeach()
 
+target_link_libraries(main
+PRIVATE 
+buffer
+http
+log
+pool
+server
+timer
+)
