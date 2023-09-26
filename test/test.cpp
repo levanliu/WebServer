@@ -1,5 +1,5 @@
-#include "../src/log/log.hpp"
-#include "../src/pool/threadPool.hpp"
+#include "../src/log/log.h"
+#include "../src/pool/threadpool.h"
 #include <features.h>
 
 #if __GLIBC__ == 2 && __GLIBC_MINOR__ < 30
@@ -9,9 +9,9 @@
 
 void TestLog() {
     int cnt = 0, level = 0;
-    Log::getgetInstance()->init(level, "./testlog1", ".log", 0);
+    Log::getInstance()->init(level, "./testlog1", ".log", 0);
     for(level = 3; level >= 0; level--) {
-        Log::getgetInstance()->setLevel(level);
+        Log::getInstance()->setLevel(level);
         for(int j = 0; j < 10000; j++ ){
             for(int i = 0; i < 4; i++) {
                 LOG_BASE(i,"%s 111111111 %d ============= ", "Test", cnt++);
@@ -19,9 +19,9 @@ void TestLog() {
         }
     }
     cnt = 0;
-    Log::getgetInstance()->init(level, "./testlog2", ".log", 5000);
+    Log::getInstance()->init(level, "./testlog2", ".log", 5000);
     for(level = 0; level < 4; level++) {
-        Log::getgetInstance()->setLevel(level);
+        Log::getInstance()->setLevel(level);
         for(int j = 0; j < 10000; j++ ){
             for(int i = 0; i < 4; i++) {
                 LOG_BASE(i,"%s 222222222 %d ============= ", "Test", cnt++);
@@ -37,10 +37,10 @@ void ThreadLogTask(int i, int cnt) {
 }
 
 void TestThreadPool() {
-    Log::getgetInstance()->init(0, "./testThreadpool", ".log", 5000);
+    Log::getInstance()->init(0, "./testThreadpool", ".log", 5000);
     ThreadPool threadpool(6);
     for(int i = 0; i < 18; i++) {
-        threadpool.addTask(std::bind(ThreadLogTask, i % 4, i * 10000));
+        threadpool.AddTask(std::bind(ThreadLogTask, i % 4, i * 10000));
     }
     getchar();
 }
