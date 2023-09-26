@@ -1,6 +1,4 @@
-#pragma onceLOG_H
-#define LOG_H
-
+#pragma once
 #include <mutex>
 #include <string>
 #include <thread>
@@ -73,4 +71,3 @@ private:
 #define LOG_WARN(format, ...) do {LOG_BASE(2, format, ##__VA_ARGS__)} while(0);
 #define LOG_ERROR(format, ...) do {LOG_BASE(3, format, ##__VA_ARGS__)} while(0);
 
-#endif //LOG_H

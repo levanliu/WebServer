@@ -1,5 +1,4 @@
-#pragma onceSQLCONNPOOL_H
-#define SQLCONNPOOL_H
+#pragma once
 
 #include <mysql/mysql.h>
 #include <string>
@@ -36,4 +35,3 @@ private:
 };
 
 
-#endif // SQLCONNPOOL_H

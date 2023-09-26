@@ -1,5 +1,4 @@
-#pragma onceBLOCKQUEUE_H
-#define BLOCKQUEUE_H
+#pragma once
 
 #include <mutex>
 #include <deque>
@@ -176,4 +175,3 @@ bool BlockDeque<T>::pop(T &item, int timeout) {
     return true;
 }
 
-#endif // BLOCKQUEUE_H

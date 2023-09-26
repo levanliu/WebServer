@@ -1,6 +1,5 @@
 
-#pragma onceHTTP_REQUEST_H
-#define HTTP_REQUEST_H
+#pragma once
 
 #include <unordered_map>
 #include <unordered_set>
@@ -77,4 +76,3 @@ private:
 };
 
 
-#endif //HTTP_REQUEST_H

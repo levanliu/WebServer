@@ -1,5 +1,4 @@
-#pragma onceHEAP_TIMER_H
-#define HEAP_TIMER_H
+#pragma once
 
 #include <queue>
 #include <unordered_map>
@@ -58,4 +57,3 @@ private:
     std::unordered_map<int, size_t> ref_;
 };
 
-#endif //HEAP_TIMER_H

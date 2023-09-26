@@ -1,5 +1,5 @@
-#pragma onceBUFFER_H
-#define BUFFER_H
+#pragma once
+
 #include <cstring>   //perror
 #include <iostream>
 #include <unistd.h>  // write
@@ -47,4 +47,3 @@ private:
     std::atomic<std::size_t> writePos_;
 };
 
-#endif //BUFFER_H

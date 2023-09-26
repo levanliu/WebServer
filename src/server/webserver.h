@@ -1,6 +1,5 @@
 
-#pragma onceWEBSERVER_H
-#define WEBSERVER_H
+#pragma once
 
 #include <unordered_map>
 #include <fcntl.h>       // fcntl()
@@ -68,4 +67,3 @@ private:
 };
 
 
-#endif //WEBSERVER_H

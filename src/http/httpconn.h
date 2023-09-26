@@ -1,7 +1,6 @@
 
 
-#pragma onceHTTP_CONN_H
-#define HTTP_CONN_H
+#pragma once
 
 #include <sys/types.h>
 #include <sys/uio.h>     // readv/writev
@@ -69,4 +68,3 @@ private:
 };
 
 
-#endif //HTTP_CONN_H

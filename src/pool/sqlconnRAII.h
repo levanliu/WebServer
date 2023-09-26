@@ -1,7 +1,6 @@
 
 
-#pragma onceSQLCONNRAII_H
-#define SQLCONNRAII_H
+#pragma once
 #include "sqlconnpool.h"
 
 /* 资源在对象构造初始化 资源在对象析构时释放*/
@@ -23,4 +22,3 @@ private:
     SqlConnPool* connpool_;
 };
 
-#endif //SQLCONNRAII_H
