@@ -1,6 +1,6 @@
 
 
-#ifndef HTTP_CONN_H
+#pragma onceHTTP_CONN_H
 #define HTTP_CONN_H
 
 #include <sys/types.h>

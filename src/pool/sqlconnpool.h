@@ -1,4 +1,4 @@
-#ifndef SQLCONNPOOL_H
+#pragma onceSQLCONNPOOL_H
 #define SQLCONNPOOL_H
 
 #include <mysql/mysql.h>
@@ -11,16 +11,16 @@
 
 class SqlConnPool {
 public:
-    static SqlConnPool *Instance();
+    static SqlConnPool *getInstance();
 
-    MYSQL *GetConn();
-    void FreeConn(MYSQL * conn);
+    MYSQL *getConn();
+    void freeConn(MYSQL * conn);
     int GetFreeConnCount();
 
     void init(const char* host, int port,
               const char* user,const char* pwd, 
               const char* dbName, int connSize);
-    void ClosePool();
+    void closePool();
 
 private:
     SqlConnPool();

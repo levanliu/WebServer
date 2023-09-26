@@ -1,5 +1,4 @@
-
-#ifndef HEAP_TIMER_H
+#pragma onceHEAP_TIMER_H
 #define HEAP_TIMER_H
 
 #include <queue>

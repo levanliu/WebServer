@@ -1,5 +1,5 @@
 
-#ifndef EPOLLER_H
+#pragma onceEPOLLER_H
 #define EPOLLER_H
 
 #include <sys/epoll.h> //epoll_ctl()
@@ -15,17 +15,17 @@ public:
 
     ~Epoller();
 
-    bool AddFd(int fd, uint32_t events);
+    bool addFd(int fd, uint32_t events);
 
-    bool ModFd(int fd, uint32_t events);
+    bool modFd(int fd, uint32_t events);
 
-    bool DelFd(int fd);
+    bool delFd(int fd);
 
-    int Wait(int timeoutMs = -1);
+    int wait(int timeoutMs = -1);
 
-    int GetEventFd(size_t i) const;
+    int getEventFd(size_t i) const;
 
-    uint32_t GetEvents(size_t i) const;
+    uint32_t getEvents(size_t i) const;
         
 private:
     int epollFd_;

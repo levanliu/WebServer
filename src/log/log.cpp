@@ -27,12 +27,12 @@ Log::~Log() {
     }
 }
 
-int Log::GetLevel() {
+int Log::getLevel() {
     lock_guard<mutex> locker(mtx_);
     return level_;
 }
 
-void Log::SetLevel(int level) {
+void Log::setLevel(int level) {
     lock_guard<mutex> locker(mtx_);
     level_ = level;
 }
@@ -126,7 +126,7 @@ void Log::write(int level, const char *format, ...) {
                     t.tm_hour, t.tm_min, t.tm_sec, now.tv_usec);
                     
         buff_.hasWritten(n);
-        AppendLogLevelTitle_(level);
+        appendLogLevelTitle_(level);
 
         va_start(vaList, format);
         int m = vsnprintf(buff_.beginWrite(), buff_.writableBytes(), format, vaList);
@@ -144,7 +144,7 @@ void Log::write(int level, const char *format, ...) {
     }
 }
 
-void Log::AppendLogLevelTitle_(int level) {
+void Log::appendLogLevelTitle_(int level) {
     switch(level) {
     case 0:
         buff_.append("[debug]: ", 9);
@@ -171,7 +171,7 @@ void Log::flush() {
     fflush(fp_);
 }
 
-void Log::AsyncWrite_() {
+void Log::asyncWrite_() {
     string str = "";
     while(deque_->pop(str)) {
         lock_guard<mutex> locker(mtx_);
@@ -179,11 +179,11 @@ void Log::AsyncWrite_() {
     }
 }
 
-Log* Log::Instance() {
+Log* Log::getInstance() {
     static Log inst;
     return &inst;
 }
 
 void Log::FlushLogThread() {
-    Log::Instance()->AsyncWrite_();
+    Log::getInstance()->asyncWrite_();
 }

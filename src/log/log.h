@@ -1,4 +1,4 @@
-#ifndef LOG_H
+#pragma onceLOG_H
 #define LOG_H
 
 #include <mutex>
@@ -18,21 +18,21 @@ public:
                 const char* suffix =".log",
                 int maxQueueCapacity = 1024);
 
-    static Log* Instance();
+    static Log* getInstance();
     static void FlushLogThread();
 
     void write(int level, const char *format,...);
     void flush();
 
-    int GetLevel();
-    void SetLevel(int level);
-    bool IsOpen() { return isOpen_; }
+    int getLevel();
+    void setLevel(int level);
+    bool isOpen() { return isOpen_; }
     
 private:
     Log();
-    void AppendLogLevelTitle_(int level);
+    void appendLogLevelTitle_(int level);
     virtual ~Log();
-    void AsyncWrite_();
+    void asyncWrite_();
 
 private:
     static const int LOG_PATH_LEN = 256;
@@ -61,8 +61,8 @@ private:
 
 #define LOG_BASE(level, format, ...) \
     do {\
-        Log* log = Log::Instance();\
-        if (log->IsOpen() && log->GetLevel() <= level) {\
+        Log* log = Log::getInstance();\
+        if (log->isOpen() && log->getLevel() <= level) {\
             log->write(level, format, ##__VA_ARGS__); \
             log->flush();\
         }\

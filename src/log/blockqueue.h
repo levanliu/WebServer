@@ -1,4 +1,4 @@
-#ifndef BLOCKQUEUE_H
+#pragma onceBLOCKQUEUE_H
 #define BLOCKQUEUE_H
 
 #include <mutex>

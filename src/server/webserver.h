@@ -1,5 +1,5 @@
 
-#ifndef WEBSERVER_H
+#pragma onceWEBSERVER_H
 #define WEBSERVER_H
 
 #include <unordered_map>
@@ -28,28 +28,28 @@ public:
         bool openLog, int logLevel, int logQueSize);
 
     ~WebServer();
-    void Start();
+    void start();
 
 private:
-    bool InitSocket_(); 
-    void InitEventMode_(int trigMode);
-    void AddClient_(int fd, sockaddr_in addr);
+    bool initSocket_(); 
+    void initEventMode_(int trigMode);
+    void addClient_(int fd, sockaddr_in addr);
   
-    void DealListen_();
-    void DealWrite_(HttpConn* client);
-    void DealRead_(HttpConn* client);
+    void dealListen_();
+    void dealWrite_(HttpConn* client);
+    void dealRead_(HttpConn* client);
 
-    void SendError_(int fd, const char*info);
-    void ExtentTime_(HttpConn* client);
-    void CloseConn_(HttpConn* client);
+    void sendError_(int fd, const char*info);
+    void extentTime_(HttpConn* client);
+    void closeConn_(HttpConn* client);
 
-    void OnRead_(HttpConn* client);
-    void OnWrite_(HttpConn* client);
-    void OnProcess(HttpConn* client);
+    void onRead_(HttpConn* client);
+    void onWrite_(HttpConn* client);
+    void onProcess(HttpConn* client);
 
     static const int MAX_FD = 65536;
 
-    static int SetFdNonblock(int fd);
+    static int setFdNonblock(int fd);
 
     int port_;
     bool openLinger_;

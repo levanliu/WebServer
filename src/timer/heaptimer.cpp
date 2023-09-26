@@ -1,4 +1,3 @@
-
 #include "heaptimer.h"
 
 void HeapTimer::siftup_(size_t i) {

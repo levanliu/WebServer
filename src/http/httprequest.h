@@ -1,5 +1,5 @@
 
-#ifndef HTTP_REQUEST_H
+#pragma onceHTTP_REQUEST_H
 #define HTTP_REQUEST_H
 
 #include <unordered_map>

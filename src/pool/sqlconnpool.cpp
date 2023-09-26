@@ -8,7 +8,7 @@ SqlConnPool::SqlConnPool() {
     freeCount_ = 0;
 }
 
-SqlConnPool* SqlConnPool::Instance() {
+SqlConnPool* SqlConnPool::getInstance() {
     static SqlConnPool connPool;
     return &connPool;
 }
@@ -36,7 +36,7 @@ void SqlConnPool::init(const char* host, int port,
     sem_init(&semId_, 0, MAX_CONN_);
 }
 
-MYSQL* SqlConnPool::GetConn() {
+MYSQL* SqlConnPool::getConn() {
     MYSQL *sql = nullptr;
     if(connQue_.empty()){
         LOG_WARN("SqlConnPool busy!");
@@ -51,14 +51,14 @@ MYSQL* SqlConnPool::GetConn() {
     return sql;
 }
 
-void SqlConnPool::FreeConn(MYSQL* sql) {
+void SqlConnPool::freeConn(MYSQL* sql) {
     assert(sql);
     lock_guard<mutex> locker(mtx_);
     connQue_.push(sql);
     sem_post(&semId_);
 }
 
-void SqlConnPool::ClosePool() {
+void SqlConnPool::closePool() {
     lock_guard<mutex> locker(mtx_);
     while(!connQue_.empty()) {
         auto item = connQue_.front();
@@ -74,5 +74,5 @@ int SqlConnPool::GetFreeConnCount() {
 }
 
 SqlConnPool::~SqlConnPool() {
-    ClosePool();
+    closePool();
 }

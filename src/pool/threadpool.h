@@ -1,4 +1,4 @@
-#ifndef THREADPOOL_H
+#pragma onceTHREADPOOL_H
 #define THREADPOOL_H
 
 #include <mutex>
